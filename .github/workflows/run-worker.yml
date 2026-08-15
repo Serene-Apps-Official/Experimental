@@ -1,0 +1,16 @@
+name: Trigger Mail Scheduler Worker
+
+on:
+  schedule:
+    # Runs every 5 minutes. GitHub may delay this by a few minutes under load.
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}   # lets you trigger it manually from the Actions tab
+
+jobs:
+  ping-worker:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call worker endpoint
+        run: |
+          curl -sS -o /dev/null -w "HTTP status: %{http_code}\n" \
+            "${{ secrets.WORKER_URL }}?worker=1&key=${{ secrets.WORKER_SECRET }}"
